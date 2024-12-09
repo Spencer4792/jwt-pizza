@@ -107,4 +107,4 @@ interface PizzaService {
   docs(docType: string): Promise<Endpoints>;
 }
 
-export { Role, PizzaService, User, Menu, Pizza, OrderHistory, Order, Franchise, Store, OrderItem, Endpoint, Endpoints, OrderResponse, JWTPayload };
+export { Role, PizzaService, User, Menu, Pizza, OrderHistory, Order, Franchise, Store, OrderItem, Endpoint, Endpoints, OrderResponse, JWTPayload, };
