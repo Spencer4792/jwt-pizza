@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import AdminDashboard from '../../views/adminDashboard';
 import { pizzaService } from '../../service/service';
@@ -26,10 +26,10 @@ describe('AdminDashboard', () => {
   const mockFranchises = [
     {
       id: '1',
-      name: 'Test Franchise',
-      admins: [{ name: 'Admin 1', email: 'admin@test.com' }],
+      name: 'Pizza Palace',
+      admins: [{ name: 'John Admin', email: 'john@test.com' }],
       stores: [
-        { id: '1', name: 'Store 1', totalRevenue: 1000 }
+        { id: '1', name: 'Downtown Store', totalRevenue: 1000 }
       ]
     }
   ];
@@ -47,34 +47,105 @@ describe('AdminDashboard', () => {
     vi.mocked(pizzaService.getFranchises).mockResolvedValue(mockFranchises);
   });
 
-  it('renders dashboard for admin user', async () => {
-    render(
-      <BrowserRouter>
-        <AdminDashboard user={mockAdminUser} />
-      </BrowserRouter>
-    );
-
-    expect(await screen.findByText("Mama Ricci's kitchen")).toBeInTheDocument();
-    expect(screen.getByText('Test Franchise')).toBeInTheDocument();
-    expect(screen.getByText('Admin 1')).toBeInTheDocument();
-    expect(screen.getByText('Store 1')).toBeInTheDocument();
-    expect(screen.getByText('1,000 ₿')).toBeInTheDocument();
+  afterEach(() => {
+    vi.resetAllMocks();
   });
 
-  it('navigates to create franchise page', async () => {
+  it('renders header and welcome message for admin user', async () => {
     render(
       <BrowserRouter>
         <AdminDashboard user={mockAdminUser} />
       </BrowserRouter>
     );
 
-    const addButton = await screen.findByText('Add Franchise');
+    expect(screen.getByText("Mama Ricci's kitchen")).toBeInTheDocument();
+    expect(screen.getByText("Keep the dough rolling and the franchises signing up.")).toBeInTheDocument();
+  });
+
+  it('renders table headers correctly', async () => {
+    render(
+      <BrowserRouter>
+        <AdminDashboard user={mockAdminUser} />
+      </BrowserRouter>
+    );
+
+    const headers = ['Franchise', 'Franchisee', 'Store', 'Revenue', 'Action'];
+    headers.forEach(header => {
+      expect(screen.getByText(header)).toBeInTheDocument();
+    });
+  });
+
+  it('renders franchise and store data correctly', async () => {
+    render(
+      <BrowserRouter>
+        <AdminDashboard user={mockAdminUser} />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Pizza Palace')).toBeInTheDocument();
+      expect(screen.getByText('John Admin')).toBeInTheDocument();
+      expect(screen.getByText('Downtown Store')).toBeInTheDocument();
+      expect(screen.getByText('1,000 ₿')).toBeInTheDocument();
+    });
+  });
+
+  it('navigates to create franchise page when Add Franchise button is clicked', async () => {
+    render(
+      <BrowserRouter>
+        <AdminDashboard user={mockAdminUser} />
+      </BrowserRouter>
+    );
+
+    const addButton = screen.getByText('Add Franchise');
     fireEvent.click(addButton);
+    
     expect(mockNavigate).toHaveBeenCalledWith('/admin-dashboard/create-franchise');
   });
 
+  it('navigates to close franchise page when Close button is clicked', async () => {
+    render(
+      <BrowserRouter>
+        <AdminDashboard user={mockAdminUser} />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      const closeButtons = screen.getAllByText('Close');
+      fireEvent.click(closeButtons[0]); // Franchise close button
+    });
+
+    expect(mockNavigate).toHaveBeenCalledWith('/admin-dashboard/close-franchise', {
+      state: { franchise: mockFranchises[0] }
+    });
+  });
+
+  it('navigates to close store page when store Close button is clicked', async () => {
+    render(
+      <BrowserRouter>
+        <AdminDashboard user={mockAdminUser} />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      const closeButtons = screen.getAllByText('Close');
+      fireEvent.click(closeButtons[1]); // Store close button
+    });
+
+    expect(mockNavigate).toHaveBeenCalledWith('/admin-dashboard/close-store', {
+      state: { 
+        franchise: mockFranchises[0],
+        store: mockFranchises[0].stores[0]
+      }
+    });
+  });
+
   it('shows NotFound for non-admin user', () => {
-    const nonAdminUser = { ...mockAdminUser, roles: [{ role: Role.Diner }] };
+    const nonAdminUser = {
+      ...mockAdminUser,
+      roles: [{ role: Role.Diner }]
+    };
+
     render(
       <BrowserRouter>
         <AdminDashboard user={nonAdminUser} />
@@ -82,5 +153,37 @@ describe('AdminDashboard', () => {
     );
 
     expect(screen.queryByText("Mama Ricci's kitchen")).not.toBeInTheDocument();
+  });
+
+  it('handles multiple franchises and stores', async () => {
+    const multipleMockFranchises = [
+      ...mockFranchises,
+      {
+        id: '2',
+        name: 'Pizza Paradise',
+        admins: [{ name: 'Jane Admin', email: 'jane@test.com' }],
+        stores: [
+          { id: '2', name: 'Mall Store', totalRevenue: 2000 },
+          { id: '3', name: 'Airport Store', totalRevenue: 3000 }
+        ]
+      }
+    ];
+
+    vi.mocked(pizzaService.getFranchises).mockResolvedValue(multipleMockFranchises);
+
+    render(
+      <BrowserRouter>
+        <AdminDashboard user={mockAdminUser} />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Pizza Paradise')).toBeInTheDocument();
+      expect(screen.getByText('Jane Admin')).toBeInTheDocument();
+      expect(screen.getByText('Mall Store')).toBeInTheDocument();
+      expect(screen.getByText('Airport Store')).toBeInTheDocument();
+      expect(screen.getByText('2,000 ₿')).toBeInTheDocument();
+      expect(screen.getByText('3,000 ₿')).toBeInTheDocument();
+    });
   });
 });
