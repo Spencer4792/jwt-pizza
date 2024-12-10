@@ -19,9 +19,6 @@ export default defineConfig({
         'src/**/vite.config.js',
         '**/*.d.ts',
       ]
-    },
-    deps: {
-      inline: ['vitest-canvas-mock']
-    },
+    }
   }
 });
