@@ -78,7 +78,9 @@ jobs:
           curl https://img.shields.io/badge/Coverage-$coverage_pct%25-$color -o coverageBadge.svg
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git pull origin main --rebase  # Add this line
+          git stash -u  # Stash all changes including untracked files
+          git pull origin main
+          git stash pop  # Restore the changes
           git add .
           git commit -m "generated"
           git push
