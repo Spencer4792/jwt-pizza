@@ -18,9 +18,10 @@ As part of `Deliverable ⓵ Development deployment: JWT Pizza`, start up the app
 | View History page | history.jsx | [GET] /api/order/history | SELECT * FROM orders WHERE userId = ? |
 | Login as franchisee (f@jwt.com, pw: franchisee) | login.jsx | [PUT] /api/auth | SELECT * FROM user WHERE email = ?; SELECT role, objectId FROM userRole WHERE userId = ? |
 | View franchise (as franchisee) | franchise.jsx | [GET] /api/franchise/{franchiseId} | SELECT * FROM franchise WHERE id = ?; SELECT * FROM store WHERE franchiseId = ? |
-| Create a store | store.jsx | [POST] /api/franchise/{franchiseId}/store | INSERT INTO store (franchiseId, name, status) VALUES (?, ?, 'open') |
+| Create a store | store.jsx | [POST] /api/franchise/{franchiseId}/store | INSERT INTO store (franchiseId, name, status, revenue, createdAt, updatedAt) VALUES (?, ?, 'open', 0, NOW(), NOW()) |
 | Close a store | store.jsx | [PUT] /api/franchise/{franchiseId}/store/{storeId} | UPDATE store SET status = 'closed' WHERE id = ? |
 | Login as admin (a@jwt.com, pw: admin) | login.jsx | [PUT] /api/auth | SELECT * FROM user WHERE email = ?; SELECT role, objectId FROM userRole WHERE userId = ? |
 | View Admin page | admin.jsx | [GET] /api/admin/users | SELECT * FROM user; SELECT * FROM userRole |
 | Create a franchise for t@jwt.com | admin.jsx | [POST] /api/franchise | INSERT INTO franchise (name) VALUES (?); INSERT INTO franchiseAdmin (franchiseId, userId) VALUES (?, ?) |
 | Close the franchise for t@jwt.com | admin.jsx | [PUT] /api/franchise/{franchiseId} | UPDATE franchise SET status = 'closed' WHERE id = ? |
+
