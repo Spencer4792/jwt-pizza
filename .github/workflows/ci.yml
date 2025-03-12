@@ -60,6 +60,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       version: ${{needs.build.outputs.version}}
+    environment:
+      name: production
+      url: https://pizza.pizzapalace.click
     steps:
       - name: Create OIDC token to AWS
         uses: aws-actions/configure-aws-credentials@v4
@@ -92,7 +95,5 @@ jobs:
           name: Version ${{ env.version }}
           body: |
             ## 🚀 Changes
-
             ${{ github.event.head_commit.message }}
-
             **commit**: ${{ github.sha }}
