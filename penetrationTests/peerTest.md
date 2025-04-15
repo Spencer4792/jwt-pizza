@@ -14,7 +14,7 @@ Spencer Hales, Jacob Wise
 | Classification | Broken Authentication |
 | Severity | Medium |
 | Description | I did the basics of trying to gain unauthorized access to my application by testing common passwords against the authentication endpoint. I used the inspect and browser developer tools to send multiple login requests with a bunch of different password combinations.  |
-| Images | ![Self Attack Screenshot](selfattack.png)|
+| Images | ![Self Attack Screenshot](/selfattack.png)|
 | Corrections |  I implemented a rate limiting on authentication endpoints, and I added an account lockout after multiple failed attempts. I also updated the password requirements so they’re not just, “password” and “123456”. |
 
 ### Jacob’s Self Attack
