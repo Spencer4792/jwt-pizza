@@ -35,7 +35,7 @@ DOS attack to the Pizza Factory Service (Ordering too many pizzas and attempting
 | Classification | OWASP A2 \- Cryptographic Failures |
 | Severity | Low |
 | Description | Analysis of the jwt token structure revealed all of the user roles and permissions data, though token manipulation wasn’t successful. |
-| Images | ![][image2] |
+| Images | ![JWT Token Analysis](/token.png)  |
 | Corrections | Minimize sensitive data in token payloads and ensure robust signature verification so other users do not have access to credentials. |
 
 | Date | April 15, 2025 |
@@ -44,7 +44,7 @@ DOS attack to the Pizza Factory Service (Ordering too many pizzas and attempting
 | Classification | OWASP A4 \- Insecure Design |
 | Severity | Medium  |
 | Description | The server was returning a 500 internal server error when processing a negative price value, indicating some improper input validation. Rather than validating and rejecting, the application crashes. |
-| Images | ![][image3] |
+| Images | ![Negative Values Test](/negativevalues.png) |
 | Corrections | Implement proper server-side validations for all numeric inputs. Validate that prices are positive values before processing orders. |
 
 ### Jacob’s Attack on Spencer
@@ -56,7 +56,7 @@ DOS attack to the Pizza Factory Service (Ordering too many pizzas and attempting
 | Classification | A03:2021-Injection |
 | Severity | High (9) |
 | Description | The endpoint `PUT /api/auth` for user info updating does not sanitize the `email` field. This, combined with the structure of the query allows a malicious user to overwrite the username and password of any userID of their choosing. |
-| Images | ![A Successful Attack][image4] ![Success\!][image5] (That hashed password is a salted hash for “password”) |
+| Images | ![SQL Injection Test](/injection.png) |
 | Corrections | Remove the `Update user` endpoint entirely as it is not used in the app, or use parameterized queries instead of string concatenation. Moving the “GET” portion of the query to the start might also be a good place to go. |
 
 | Item | Result |
@@ -66,7 +66,7 @@ DOS attack to the Pizza Factory Service (Ordering too many pizzas and attempting
 | Classification | Security Misconfiguration |
 | Severity | High (8) |
 | Description | The default admin user was still in place when I started my attack. The default username and password were exposed on the `/api/docs` endpoint |
-| Images | ![][image6]![][image7] |
+| Images | ![Authentication Test](/auth.png) |
 | Corrections | Remove the default credentials from the server start code. Also be sure your testing does not add unwanted admin credentials. |
 
 | Item | Result |
@@ -76,7 +76,7 @@ DOS attack to the Pizza Factory Service (Ordering too many pizzas and attempting
 | Classification | Security Misconfiguration |
 | Severity | Low (2) |
 | Description | Many endpoints log too much information, including stack traces for 500 errors. |
-| Images | ![A Successful Attack][image4] |
+| Images | ![Security Misconfiguration Test](/securitymisconfig.png)|
 | Corrections | Log the errors, but only return default messages for each error code. (I tried to add ones for 403, and made all other 400 errors go to 404\. All other errors would be 500 internal server exception, for example) |
 
 ## Combined summary of learnings
